@@ -27,34 +27,54 @@ st.markdown(
         }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
-st.title("¡A Viajar! ✈️")
+st.title("Bienvenido(a) ¡A Viajar! ✈️")
 
 # Inicializar variables de sesión
-if 'reservar' not in st.session_state:
+if "reservar" not in st.session_state:
     st.session_state.reservar = False
-if 'comprar' not in st.session_state:
+if "comprar" not in st.session_state:
     st.session_state.comprar = False
+
 
 # Función para guardar en Excel
 def guardar_reserva(datos):
     try:
         filename = "reservas_viajes_completas.xlsx"
-        
+
         if not os.path.exists(filename):
             wb = Workbook()
             ws = wb.active
-            headers = ["Destino", "Personas", "Fecha Viaje", "Fecha Registro", "Cédula", "Nombre", "Apellido", "Teléfono", "Correo"]
+            headers = [
+                "Destino",
+                "Personas",
+                "Fecha Viaje",
+                "Fecha Registro",
+                "Cédula",
+                "Nombre",
+                "Apellido",
+                "Teléfono",
+                "Correo",
+            ]
             ws.append(headers)
         else:
             wb = load_workbook(filename)
             ws = wb.active
 
         fecha_registro = datetime.now().strftime("%Y-%m-%d %H:%M")
-        nueva_fila = [datos['destino'], datos['personas'], datos['fecha'].strftime("%Y-%m-%d"), fecha_registro,
-                      str(datos['cedula']), datos['nombre'], datos['apellido'], str(datos['telefono']), datos['correo']]
+        nueva_fila = [
+            datos["destino"],
+            datos["personas"],
+            datos["fecha"].strftime("%Y-%m-%d"),
+            fecha_registro,
+            str(datos["cedula"]),
+            datos["nombre"],
+            datos["apellido"],
+            str(datos["telefono"]),
+            datos["correo"],
+        ]
 
         ws.append(nueva_fila)
         wb.save(filename)
@@ -63,18 +83,26 @@ def guardar_reserva(datos):
         st.error(f"Error: {str(e)}")
         return False
 
+
 # Formulario de reserva
 with st.form("reserva_form"):
     col1, col2 = st.columns(2)
-    
+
     with col1:
-        destino = st.selectbox("Destino", ["Selecciona un destino", "España", "Dubai", "Francia", "Italia", "Brasil"])
-        
+        destino = st.selectbox(
+            "Destino",
+            ["Selecciona un destino", "España", "Dubai", "Francia", "Italia", "Brasil"],
+        )
+
     with col2:
-        personas = st.number_input("Personas a viajar", min_value=1, max_value=10, help="Número de viajeros")
-    
-    fecha = st.date_input("Fecha del viaje", min_value=datetime.today(), format="DD/MM/YYYY")
-    
+        personas = st.number_input(
+            "Personas a viajar", min_value=1, max_value=10, help="Número de viajeros"
+        )
+
+    fecha = st.date_input(
+        "Fecha del viaje", min_value=datetime.today(), format="DD/MM/YYYY"
+    )
+
     reservar = st.form_submit_button("Reservar")
 
 if reservar:
@@ -90,12 +118,37 @@ if reservar:
 if st.session_state.reservar and not st.session_state.comprar:
     st.subheader("Información del comprador")
     with st.form("comprador_form"):
-        cedula = st.text_input("Cédula", placeholder="Ej: 1234567890", help="Solo números sin puntos ni guiones", key="cedula_input")
-        telefono = st.text_input("Teléfono", placeholder="Ej: 3101234567", help="Solo números sin espacios ni guiones", key="telefono_input")
-        nombre = st.text_input("Nombre", placeholder="Tu nombre", help="Ingresa tu nombre completo", key="nombre_input")
-        apellido = st.text_input("Apellido", placeholder="Tu apellido", help="Ingresa tu apellido completo", key="apellido_input")
-        correo = st.text_input("Correo Electrónico", placeholder="tucorreo@gmail.com", help="Ingresa un correo válido", key="correo_input")
-        
+        cedula = st.text_input(
+            "Cédula",
+            placeholder="Ej: 1234567890",
+            help="Solo números sin puntos ni guiones",
+            key="cedula_input",
+        )
+        telefono = st.text_input(
+            "Teléfono",
+            placeholder="Ej: 3101234567",
+            help="Solo números sin espacios ni guiones",
+            key="telefono_input",
+        )
+        nombre = st.text_input(
+            "Nombre",
+            placeholder="Tu nombre",
+            help="Ingresa tu nombre completo",
+            key="nombre_input",
+        )
+        apellido = st.text_input(
+            "Apellido",
+            placeholder="Tu apellido",
+            help="Ingresa tu apellido completo",
+            key="apellido_input",
+        )
+        correo = st.text_input(
+            "Correo Electrónico",
+            placeholder="tucorreo@gmail.com",
+            help="Ingresa un correo válido",
+            key="correo_input",
+        )
+
         comprar = st.form_submit_button("Confirmar compra")
 
     if comprar:
@@ -110,14 +163,22 @@ if st.session_state.reservar and not st.session_state.comprar:
             errores.append("El apellido es obligatorio")
         if "@" not in correo or "." not in correo:
             errores.append("Ingresa un correo electrónico válido")
-        
+
         if errores:
             for error in errores:
                 st.error(error)
         else:
-            datos_reserva = {'destino': st.session_state.destino, 'personas': st.session_state.personas, 'fecha': st.session_state.fecha,
-                             'cedula': cedula, 'nombre': nombre, 'apellido': apellido, 'telefono': telefono, 'correo': correo}
-            
+            datos_reserva = {
+                "destino": st.session_state.destino,
+                "personas": st.session_state.personas,
+                "fecha": st.session_state.fecha,
+                "cedula": cedula,
+                "nombre": nombre,
+                "apellido": apellido,
+                "telefono": telefono,
+                "correo": correo,
+            }
+
             if guardar_reserva(datos_reserva):
                 st.session_state.comprar = True
                 st.session_state.cedula = cedula
@@ -134,14 +195,15 @@ if st.session_state.comprar:
     st.success("¡Reserva realizada con éxito! ✅")
     st.write("---")
     st.subheader("Detalles completos de la reserva:")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown("*Información del viaje:*")
         st.write(f"- Destino: {st.session_state.destino}")
         st.write(f"- Viajeros: {st.session_state.personas} personas")
         st.write(f"- Fecha: {st.session_state.fecha.strftime('%d/%m/%Y')}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with col2:
         st.markdown("*Información personal:*")
@@ -150,8 +212,8 @@ if st.session_state.comprar:
         st.write(f"- Apellido: {st.session_state.apellido}")
         st.write(f"- Teléfono: {st.session_state.telefono}")
         st.write(f"- Correo: {st.session_state.correo}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    
     filename = "reservas_viajes_completas.xlsx"
 
     if os.path.exists(filename):
@@ -159,19 +221,25 @@ if st.session_state.comprar:
 
         # st.write("Datos cargados desde Excel:", df)
 
-
         if not df.empty:
-            st.subheader("Estado De Nuestras Reservas 📊")
-            df['Fecha Registro'] = pd.to_datetime(df['Fecha Registro'])
-            
-            reservas_por_destino = df.groupby(['Fecha Registro', 'Destino']).size().reset_index(name='Personas')
-            
-            fig = px.line(reservas_por_destino, x='Fecha Registro', y='Personas', color='Destino',
-                          markers=True, title="")
+            st.subheader("Historial de Reservas 📊")
+            df["Fecha Viaje"] = pd.to_datetime(df["Fecha Viaje"])
+
+            reservas_por_destino = (
+                df.groupby(["Fecha Viaje", "Destino"])["Personas"].sum().reset_index()
+            )
+
+            fig = px.line(
+                reservas_por_destino,
+                x="Fecha Viaje",
+                y="Personas",
+                color="Destino",
+                markers=True,
+                title="",
+            )
 
             st.plotly_chart(fig)
 
-    
     st.write("")
     st.write("---")
     st.write("")
