@@ -140,4 +140,4 @@ Se organiza el diseño y estilos de toda la aplicacion
 mejoras del repo incial y se agrega función de guardar registros en excel
 
 @JONZLCESDE
-se agrega la grafica y se actualiza el requirements porque requeri de unas dependencias para q la chart funcionara
+se agrega la grafica y se actualiza el requirements porque agregaron de unas dependencias para que la chart funcionara
